@@ -1,19 +1,18 @@
-import { authService } from "fbase";
-import React, { useState } from "react";
+import { authService } from 'fbase';
+import React, { useState } from 'react';
 
 const Auth = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  // eslint-disable-next-line
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [newAccount, setNewAccount] = useState(true);
   const onChange = (event) => {
     const {
       target: { name, value },
     } = event;
-    if (name === "email") {
+    if (name === 'email') {
       setEmail(value);
     }
-    if (name === "password") {
+    if (name === 'password') {
       setPassword(value);
     }
   };
@@ -37,6 +36,8 @@ const Auth = () => {
     }
   };
 
+  const toggleAccount = () => setNewAccount((prev) => !prev);
+
   return (
     <>
       <form onSubmit={onSubmit}>
@@ -56,8 +57,11 @@ const Auth = () => {
           value={password}
           onChange={onChange}
         />
-        <input type="submit" value={newAccount ? "Create Account" : "Log In"} />
+        <input type="submit" value={newAccount ? 'Create Account' : 'Log In'} />
       </form>
+      <span onClick={toggleAccount}>
+        {newAccount ? 'Sign In' : 'Create Account'}
+      </span>
       <div>
         <button>Continue with Google</button>
         <button>Continue with Github</button>

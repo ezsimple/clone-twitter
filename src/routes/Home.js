@@ -23,14 +23,8 @@ const Home = ({ userObj }) => {
   };
 
   // 도큐먼트가 찾기 힘드네요.
-  // -------------------
   // https://firebase.google.com/docs/firestore/query-data/listen?authuser=0#listen_to_multiple_documents_in_a_collection
   // firestore의 변화를 감지하는 callback함수 onSnapshot
-  // const checkFirestore = () => {
-  //   dbService.collection(collectionName).onSnapshot((snapshot) => {
-  //     console.log(snapshot.docs);
-  //   });
-  // };
 
   useEffect(() => {
     // gettweets();

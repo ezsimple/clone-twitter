@@ -1,78 +1,69 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { dbService } from 'fbase';
 
-const Home = () => {
-  const [tweet, setTweet] = useState('');
-  const [tweets, setTweets] = useState([]);
-  const collectionName = 'clone-tweeter';
+const collectionName = 'clone-tweeter';
 
-  const getTweets = async () => {
-    const datas = await dbService
-      .collection(collectionName)
-      .orderBy('createAt', 'desc')
-      .get();
-    console.log(datas);
-    datas.forEach((document) => {
-      console.log(document.data());
+const Home = ({ userObj }) => {
+  const [row, setRow] = useState('');
+  const [rows, setRows] = useState([]);
+
+  const gettweets = async () => {
+    const dbtweets = await dbService.collection(collectionName).get();
+
+    setRows([]); // 초기화 : 반드시 await 다음에서 호출되어야 합니다.
+    dbtweets.forEach((document) => {
       // spread attribute
-      const tweetObject = {
+      const rowObject = {
         ...document.data(),
         id: document.id,
       };
-      setTweets((prev) => [tweetObject, ...prev]);
+      setRows((prev) => [rowObject, ...prev]);
     });
-    console.log(tweets);
   };
 
   useEffect(() => {
-    getTweets();
+    gettweets();
   }, []);
 
   const onSubmit = async (event) => {
     event.preventDefault();
+
     await dbService.collection(collectionName).add({
-      tweet: tweet,
-      createAt: Date.now(),
+      text: row,
+      createdAt: Date.now(),
+      creatorId: userObj.uid,
     });
-    // .then(() => {
-    //   console.log('Document successfully written!');
-    // })
-    // .catch((error) => {
-    //   console.error('Error writing document: ', error);
-    // });
-    setTweet('');
+    setRow('');
   };
 
   const onChange = (event) => {
     const {
       target: { value },
     } = event;
-    setTweet(value);
+    setRow(value);
   };
 
+  console.log(rows);
   return (
-    <>
+    <div>
+      <form onSubmit={onSubmit}>
+        <input
+          value={row}
+          onChange={onChange}
+          type="text"
+          placeholder="What's on your mind?"
+          maxLength={120}
+        />
+        <input type="submit" value="tweet" />
+      </form>
       <div>
-        <form onSubmit={onSubmit}>
-          <input
-            type="text"
-            placeholder="What's on your mind"
-            value={tweet}
-            onChange={onChange}
-            maxLength={120}
-          />
-          <input type="submit" value="Tweet" />
-        </form>
-        <div>
-          {/* {tweets.map((doc) => (
-            <div key={doc.id}>
-              <h4>{doc.tweet}</h4>
-            </div>
-          ))} */}
-        </div>
+        {rows.map((tweet) => (
+          <div key={tweet.id}>
+            <h4>{tweet.text}</h4>
+          </div>
+        ))}
       </div>
-    </>
+    </div>
   );
 };
-
 export default Home;

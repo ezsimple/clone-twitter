@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { dbService } from 'fbase';
+import { dbService, storageService } from 'fbase';
 import { collectionName } from 'components/Const';
+import { v4 as uuidv4 } from 'uuid';
 import Tweet from 'components/Tweet';
 // import { collection, query, orderBy } from 'firebase/firestore';
 
@@ -8,7 +9,7 @@ import Tweet from 'components/Tweet';
 const Home = ({ userObj }) => {
   const [row, setRow] = useState('');
   const [rows, setRows] = useState([]);
-  const [attachment, setAttachment] = useState();
+  const [attachFile, setAttachFile] = useState();
   const fileInput = useRef();
 
   const gettweets = async () => {
@@ -49,15 +50,44 @@ const Home = ({ userObj }) => {
       });
   }, []);
 
+  // -------------------------------------------------------------------------
+  // 1) Storage().ref().child() return Reference - storage의 이미지 폴더 생성.
+  // 2) Reference.putString() - 이 작업이 폴더에 이미지를 넣는 작업.
+  // 3) Reference.putString() return (완료시 UploadTaskSnapshot을 받음)
+  // 4) UploadTaskSnapshot.ref.getDownloadURL()
+  // - 이 작업에서 ref 속성을 쓰면 그 이미지의 Reference에 접근 가능,
+  // 이미지가 저장된 stroage 주소를 받을 수 있다.
+  // -------------------------------------------------------------------------
   const onSubmit = async (event) => {
     event.preventDefault();
 
-    await dbService.collection(collectionName).add({
+    // await dbService.collection(collectionName).add({
+    //   text: row,
+    //   createdAt: Date.now(),
+    //   creatorId: userObj.uid,
+    // });
+    // setRow('');
+
+    let attachmentUrl = '';
+    if (attachFile !== '') {
+      const uuid = uuidv4();
+      const attachmentRef = storageService
+        .ref()
+        .child(`${userObj.uid}/${uuid}`); // uid(폴더명)/uuid(파일명)으로 생성됩니다.
+      const response = await attachmentRef.putString(attachFile, 'data_url'); // putString 사용법은 문서로 다시 확인이 필요합니다.
+      attachmentUrl = await response.ref.getDownloadURL();
+    }
+
+    const rowObj = {
       text: row,
       createdAt: Date.now(),
       creatorId: userObj.uid,
-    });
+      attachmentUrl,
+    };
+
+    await dbService.collection(`${collectionName}`).add(rowObj);
     setRow('');
+    setAttachFile('');
   };
 
   const onChange = (event) => {
@@ -77,13 +107,13 @@ const Home = ({ userObj }) => {
       const {
         currentTarget: { result },
       } = finishedEvent;
-      setAttachment(result);
+      setAttachFile(result);
     };
     reader.readAsDataURL(theFile);
   };
 
   const onClearAttachment = () => {
-    setAttachment(null);
+    setAttachFile(null);
     // Clear버튼 클릭 후 file input에 남아 있는 이미지 파일명 지우기
     fileInput.current.value = '';
   };
@@ -106,11 +136,11 @@ const Home = ({ userObj }) => {
           ref={fileInput}
         />
         <input type="submit" value="tweet" />
-        {attachment && (
+        {attachFile && (
           <>
             <div>
               <img
-                src={attachment}
+                src={attachFile}
                 width="50px"
                 height="50px"
                 alt="your's profile"

@@ -50,6 +50,14 @@ const Tweet = ({ docObj, isOwner }) => {
       ) : (
         <>
           <h4>{docObj.text}</h4>
+          {docObj.attachmentUrl && (
+            <img
+              src={docObj.attachmentUrl}
+              width="50px"
+              height="50px"
+              alt="Profile"
+            />
+          )}
           {isOwner && (
             <>
               <button onClick={onDeleteClick}>Delete Tweet</button>

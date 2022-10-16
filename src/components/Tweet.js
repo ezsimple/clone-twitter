@@ -43,7 +43,7 @@ const Tweet = ({ docObj, isOwner }) => {
               required
               onChange={onChange}
             />
-            <input type="submit" value="Update Nweet" />
+            <input type="submit" value="Update Tweet" />
           </form>
           <button onClick={toggleEditing}>Cancel</button>
         </>
@@ -52,8 +52,8 @@ const Tweet = ({ docObj, isOwner }) => {
           <h4>{docObj.text}</h4>
           {isOwner && (
             <>
-              <button onClick={onDeleteClick}>Delete Nweet</button>
-              <button onClick={toggleEditing}>Edit Nweet</button>
+              <button onClick={onDeleteClick}>Delete Tweet</button>
+              <button onClick={toggleEditing}>Edit Tweet</button>
             </>
           )}
         </>

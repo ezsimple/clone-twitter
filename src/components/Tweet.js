@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { dbService } from 'fbase';
+import { dbService, storageService } from 'fbase';
 import { collectionName } from './Const';
 
 const Tweet = ({ docObj, isOwner }) => {
@@ -11,6 +11,10 @@ const Tweet = ({ docObj, isOwner }) => {
     if (ok) {
       console.log(`${collectionName}/${docObj.id}`);
       await dbService.doc(`${collectionName}/${docObj.id}`).delete();
+
+      // URL을 이용해서, ref를 찾을 수 있는 기능을 firebase에서 제공
+      if (docObj.attachmentUrl !== '')
+        storageService.refFromURL(docObj.attachmentUrl).delete();
     }
   };
 

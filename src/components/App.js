@@ -10,11 +10,10 @@ const App = () => {
   useEffect(() => {
     // using listener : onAuthStateChanged
     authService.onAuthStateChanged((user) => {
-      if (user) {
-        // setIsLoggedIn(user ? true : false);
-        setUserObj(user);
-        setInit(true);
-      }
+      // setIsLoggedIn(user ? true : false);
+      // 로그아웃 이후 초기화면으로 이동을 위해서도 필요한 초기화
+      setUserObj(user);
+      setInit(true);
     });
   }, []);
 

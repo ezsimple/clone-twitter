@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AppRouter from 'components/Route';
 import { authService } from 'fbase';
+// import { cloneDeep } from 'lodash';
 
 const App = () => {
   const [init, setInit] = useState(false);
@@ -9,15 +10,45 @@ const App = () => {
   useEffect(() => {
     // using listener : onAuthStateChanged
     authService.onAuthStateChanged((user) => {
-      // setIsLoggedIn(user ? true : false);
-      setUserObj(user);
-      setInit(true);
+      if (user) {
+        // setIsLoggedIn(user ? true : false);
+        setUserObj(user);
+        setInit(true);
+      }
     });
   }, []);
+
+  const refreshUser = () => {
+    const user = authService.currentUser;
+    if (user === null) return;
+
+    // (중요) 작은 오브젝트로 줄여서 저장하면,
+    // React 는 객체변화를 감지하게 된다.
+    // 아래의 방식은 재미난 방법 이네요
+    setUserObj({
+      displayName: user.displayName,
+      uid: user.uid,
+      updateProfile: (args) => {
+        user.updateProfile(args);
+      },
+    });
+
+    // ======================================================================
+    // (중요) 리액트는 vdom의 얕은 비교를 통해서, 객체를 갱신하게 되는데...
+    // cloneDeep() method를 사용하면, 깊은 복사 & ref 의 주소가 갱신되어
+    // 객체에 대해 새로 고침을 수행하게 됩니다.
+    // ======================================================================
+    // setUserObj(cloneDeep(user));
+  };
+
   return (
     <>
       {init ? (
-        <AppRouter isLoggedIn={Boolean(userObj)} userObj={userObj} />
+        <AppRouter
+          refreshUser={refreshUser}
+          isLoggedIn={Boolean(userObj)}
+          userObj={userObj}
+        />
       ) : (
         'Initializing ...'
       )}

@@ -3,6 +3,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
 
+// absolute import 기능을 위해 화일명을 fbase.js 로 변경함
 // 웹앱에 Firebase를 추가하면, 화면에 출력되는 내용을 복사/붙여넣기 합니다.
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -14,5 +15,4 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const authService = firebase.auth();
-export default authService;
+export const authService = firebase.auth();

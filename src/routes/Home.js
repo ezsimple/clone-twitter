@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { dbService } from 'fbase';
+// import { collection, query, orderBy } from 'firebase/firestore';
 
 const collectionName = 'clone-tweeter';
 
@@ -21,8 +22,30 @@ const Home = ({ userObj }) => {
     });
   };
 
+  // firestore의 변화를 감지하는 callback함수 onSnapshot
+  // const checkFirestore = () => {
+  //   dbService.collection(collectionName).onSnapshot((snapshot) => {
+  //     console.log(snapshot.docs);
+  //   });
+  // };
+
   useEffect(() => {
-    gettweets();
+    // gettweets();
+    // const q = query(
+    //   collection(dbService, collectionName),
+    //   orderBy('createdAt', 'desc')
+    // );
+    dbService
+      .collection(collectionName)
+      .orderBy('createdAt', 'desc')
+      .onSnapshot((snapshot) => {
+        const docs = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        console.log(docs);
+        setRows(docs);
+      });
   }, []);
 
   const onSubmit = async (event) => {

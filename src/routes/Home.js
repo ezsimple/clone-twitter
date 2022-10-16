@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { dbService } from 'fbase';
+import { collectionName } from 'components/Const';
+import Tweet from 'components/Tweet';
 // import { collection, query, orderBy } from 'firebase/firestore';
 
-const collectionName = 'clone-tweeter';
-
+// userObj is props
 const Home = ({ userObj }) => {
   const [row, setRow] = useState('');
   const [rows, setRows] = useState([]);
@@ -22,6 +23,7 @@ const Home = ({ userObj }) => {
     });
   };
 
+  // listener : onSnapshot()
   // 도큐먼트가 찾기 힘드네요.
   // https://firebase.google.com/docs/firestore/query-data/listen?authuser=0#listen_to_multiple_documents_in_a_collection
   // firestore의 변화를 감지하는 callback함수 onSnapshot
@@ -77,10 +79,12 @@ const Home = ({ userObj }) => {
         <input type="submit" value="tweet" />
       </form>
       <div>
-        {rows.map((tweet) => (
-          <div key={tweet.id}>
-            <h4>{tweet.text}</h4>
-          </div>
+        {rows.map((row) => (
+          <Tweet
+            key={row.id}
+            docObj={row}
+            isOwner={row.creatorId === userObj.uid}
+          />
         ))}
       </div>
     </div>

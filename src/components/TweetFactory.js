@@ -2,6 +2,9 @@ import React, { useState, useRef } from 'react';
 import { dbService, storageService } from 'fbase';
 import { collectionName } from './Const';
 import { v4 as uuidv4 } from 'uuid';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { isEmpty } from 'lodash';
 
 const TweetFactory = ({ userObj }) => {
   const [row, setRow] = useState('');
@@ -19,6 +22,7 @@ const TweetFactory = ({ userObj }) => {
     // setRow('');
 
     let attachmentUrl = '';
+    if (isEmpty(row)) return;
     if (attachFile !== '') {
       const uuid = uuidv4();
       const attachmentRef = storageService
@@ -67,39 +71,48 @@ const TweetFactory = ({ userObj }) => {
     // Clear버튼 클릭 후 file input에 남아 있는 이미지 파일명 지우기
     fileInput.current.value = '';
   };
-
   return (
-    <>
-      <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className="factoryForm">
+      <div className="factoryInput__container">
         <input
+          className="factoryInput__input"
           value={row}
           onChange={onChange}
           type="text"
           placeholder="What's on your mind?"
           maxLength={120}
         />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={onFileChange}
-          ref={fileInput}
-        />
-        <input type="submit" value="tweet" />
-        {attachFile && (
-          <>
-            <div>
-              <img
-                src={attachFile}
-                width="50px"
-                height="50px"
-                alt="your's profile"
-              />
-              <button onClick={onClearAttachment}>Clear</button>
-            </div>
-          </>
-        )}
-      </form>
-    </>
+        <input type="submit" value="&rarr;" className="factoryInput__arrow" />
+      </div>
+      <label htmlFor="attach-file" className="factoryInput__label">
+        <span>Add photos</span>
+        <FontAwesomeIcon icon={faPlus} />
+      </label>
+      <input
+        id="attach-file"
+        type="file"
+        accept="image/*"
+        onChange={onFileChange}
+        style={{
+          opacity: 0,
+        }}
+      />
+      {attachFile && (
+        <div className="factoryForm__attachment">
+          <img
+            src={attachFile}
+            style={{
+              backgroundImage: attachFile,
+            }}
+            alt="attachFile"
+          />
+          <div className="factoryForm__clear" onClick={onClearAttachment}>
+            <span>Remove</span>
+            <FontAwesomeIcon icon={faTimes} />
+          </div>
+        </div>
+      )}
+    </form>
   );
 };
 

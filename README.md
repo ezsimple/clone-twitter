@@ -11,3 +11,10 @@ import "firebase/compat/auth";
 import "firebase/compat/firestore";
 import "firebase/compat/storage";
 ```
+
+[fontawesome for React 참고](https://www.daleseo.com/react-font-awesome/)
+```
+npm i @fortawesome/fontawesome-svg-core
+npm i @fortawesome/free-solid-svg-icons @fortawesome/free-regular-svg-icons @fortawesome/free-brands-svg-icons
+npm i @fortawesome/react-fontawesome
+```
